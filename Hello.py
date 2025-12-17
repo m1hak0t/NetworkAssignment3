@@ -1,1 +1,1 @@
-print("Shira is very smart")
+print("Shira is very tired")
