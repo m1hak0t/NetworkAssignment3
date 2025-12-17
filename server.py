@@ -1,1 +1,1 @@
-print("Kiss my ass")
+print(".")
