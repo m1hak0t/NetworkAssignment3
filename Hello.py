@@ -1,0 +1,1 @@
+print("Shira is very smart")
