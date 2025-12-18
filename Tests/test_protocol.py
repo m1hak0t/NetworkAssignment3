@@ -17,7 +17,7 @@ def run_protocol_test():
     seq_num_in = 12345
     payload_in = "Hello World | This contains a pipe symbol | End of message"
 
-    print(f"[Step 1] Original Data: Type={msg_type_in}, Seq={seq_num_in}, Payload='{payload_in}'")
+    print("[Step 1] Original Data: Type={msg_type_in}, Seq={seq_num_in}, Payload='{payload_in}'")
 
     # 2. Simulation: Client Side (Packing)
     # Convert the data into bytes using make_packet
@@ -25,15 +25,15 @@ def run_protocol_test():
         encoded_packet = Protocol.make_packet(msg_type_in, seq_num_in, payload_in)
         print(f"[Step 2] Encoded (sent over network): {encoded_packet}")
     except Exception as e:
-        print(f"❌ Error during make_packet: {e}")
+        print(f"Error during make_packet: {e}")
         return
 
     # 3. Simulation: Server Side (Parsing)
-    # Decode the bytes back into variables using parse_packet
+    # Decode the bytes back into variables using get_packet
     try:
-        msg_type_out, seq_num_out, payload_out = Protocol.parse_packet(encoded_packet)
+        msg_type_out, seq_num_out, payload_out = Protocol.get_packet(encoded_packet)
     except Exception as e:
-        print(f"❌ Error during parse_packet: {e}")
+        print(f"Error during get_packet: {e}")
         return
 
     # 4. Verification
@@ -42,16 +42,16 @@ def run_protocol_test():
 
     # Verify Sequence Number type (must be int, not str)
     if not isinstance(seq_num_out, int):
-        print("❌ FAILED: Sequence number is not an Integer!")
+        print(" FAILED: Sequence number is not an Integer!")
         return
 
     # Verify Content
     if (msg_type_in == msg_type_out and
         seq_num_in == seq_num_out and
         payload_in == payload_out):
-        print("\n✅ TEST PASSED: Protocol logic is solid.")
+        print("\n TEST PASSED: Protocol logic is solid.")
     else:
-        print("\n❌ TEST FAILED: Data mismatch.")
+        print("\n TEST FAILED: Data mismatch.")
 
 if __name__ == "__main__":
     run_protocol_test()

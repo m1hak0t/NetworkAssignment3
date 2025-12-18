@@ -23,7 +23,7 @@ class Protocol:
 
     #getting the massage and return Inf parts - according to the protocol
     @staticmethod
-    def parse_packet(message):
+    def get_packet(message):
 
         msg_from_binary = message.decode("utf-8")
         parts = msg_from_binary.split(Protocol.DELIMITER, 2)
