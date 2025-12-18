@@ -1,8 +1,7 @@
 import sys
 import os
 
-# --- התיקון לבעיית האימפורט (Magic Lines) ---
-# אומר לפייתון: "תחפש קבצים גם בתיקייה אחת למעלה"
+#for using fun from another packege
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
