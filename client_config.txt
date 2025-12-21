@@ -1,0 +1,5 @@
+message: dummy_file.txt
+maximum_msg_size: 999
+window_size: 3
+timeout: 3
+dynamic message size: False

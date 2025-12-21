@@ -1,0 +1,4 @@
+maximum_msg_size: 400
+window_size: 5
+timeout: 3
+dynamic message size: False

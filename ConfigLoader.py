@@ -27,23 +27,23 @@ class ConfigLoader:
             with open(file_path, 'r') as f:
                 for line in f: #in every loop it will take the next line from the file(python magic)
 
-                    # TODO 1: cleaning
+                    # cleaning
                     line = line.strip()
 
-                    # TODO 2: checking
+                    # checking
                     # if empty or not contain : - good - so continue
                     if not line or ":" not in line:
                         continue
 
-                    # TODO 3: getting (key) and (value)
+                    # getting (key) and (value)
                     key, value = line.split(":",1)
 
-                    # TODO 4: relevant value
+                    # relevant value
                     # remove: -spaces - "" - '
                     key = key.strip()
                     value = value.strip().strip('"').strip("'")
 
-                    # TODO 5: put in the dict by right order
+                    # put in the dict by right order
                     # Distinguish between each different part
                     if key == "message":
                         config["message"] = str(value)

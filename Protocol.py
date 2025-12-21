@@ -5,8 +5,9 @@ class Protocol:
     MSG_ACK = "ACK"
     MSG_SYN_ACK = "SYN-ACK"
     MSG_DATA = "DATA"
-    MSG_SIZE_REQ = "SIZE_REQ"
-    MSG_SIZE_RES = "SIZE_RES"
+    MSG_REQ_SIZE = "REQ_SIZE" #for client
+    MSG_SIZE_RESP = "SIZE_RES" #for server
+
 
     #separation between the datas - we can change just this obj instand the code
     DELIMITER = "|"
