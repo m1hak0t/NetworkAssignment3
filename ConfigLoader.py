@@ -71,5 +71,5 @@ class ConfigLoader:
 
 if __name__ == "__main__":
 
-    conf = ConfigLoader.load_config("config.txt")
+    conf = ConfigLoader.load_config("client_config.txt")
     print(conf)

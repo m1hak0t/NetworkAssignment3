@@ -12,15 +12,20 @@ class Protocol:
     #separation between the datas - we can change just this obj instand the code
     DELIMITER = "|"
 
-    #Get parts and return a message - according to the protocol
     @staticmethod
     def make_packet(msg_type, seq_num=0, payload=""):
+        # Добавляем \n как разделитель пакетов
+        msg = f"{msg_type}{Protocol.DELIMITER}{seq_num}{Protocol.DELIMITER}{payload}\n"
+        return msg.encode("utf-8")
 
-        msg = msg_type + Protocol.DELIMITER + str(seq_num) + Protocol.DELIMITER + payload
-        msg_binary =  msg.encode("utf-8")
-        return msg_binary
 
-        pass
+    @staticmethod
+    def get_packet_from_str(packet_str):
+        # Парсим строку, убирая лишние пробелы/символы конца строки
+        parts = packet_str.strip().split(Protocol.DELIMITER, 2)
+        return parts[0], int(parts[1]), parts[2]
+
+    #Get parts and return a message - according to the protocol
 
     #getting the massage and return Inf parts - according to the protocol
     @staticmethod

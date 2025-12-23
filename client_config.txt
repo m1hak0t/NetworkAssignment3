@@ -1,5 +1,4 @@
-message: dummy_file.txt
+message: Shira is the queen of complaints
 maximum_msg_size: 999
-window_size: 3
-timeout: 3
-dynamic message size: False
+window_size: 10
+timeout: 5

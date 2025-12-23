@@ -1,4 +1,7 @@
 import socket
+
+from ClientWindowEngine import ClientWindowEngine
+from DataSegmentator import DataSegmentator
 from Protocol import Protocol
 from ConfigLoader import ConfigLoader
 import os
@@ -14,7 +17,8 @@ class ReliableClient:
         self.client_socket = None
 
         self.config = ConfigLoader.load_config(config_file)
-        self.file_path = self.config["message"]
+        self.file_path = "client_config.txt"
+        self.mesage = self.config["message"]
         self.window_size = self.config["window_size"]
         self.timeout = self.config["timeout"]
 
@@ -96,16 +100,23 @@ class ReliableClient:
             self.client_socket.close()
             print("Connection closed.")
 
+
+    def run(self):
+        #Handshake
+        self.connect()
+        if client.connect():
+            print("Ready to send file...")
+            # 2. The "max_size" request
+            if client.get_max_message_size():
+                print("Ready to send")
+        #The sliding window functionality
+        segmentator_client = DataSegmentator(self.file_path)
+        window = ClientWindowEngine(client.client_socket, segmentator_client, self.file_path)
+        window.run()
+
+
 # --- Main Execution ---
 if __name__ == "__main__":
     # Creat "client"
     client = ReliableClient('127.0.0.1', 12345, "client_config.txt")
-    # 1. The "handshake"
-    if client.connect():
-        print("Ready to send file...")
-        # 2. The "max_size" request
-        if client.get_max_message_size():
-            print("Ready to send")
-            # 3. The request (not ready yet)
-            #clinet.send_file
-    client.close()
+    client.run()

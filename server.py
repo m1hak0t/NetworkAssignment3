@@ -20,6 +20,8 @@ class ReliableServer:
         self.window_size = self.full_config["window_size"]
 
 
+
+
     def run(self):
         # 1. Create a TCP/IP socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -111,11 +113,14 @@ class ReliableServer:
                     response = Protocol.make_packet(Protocol.MSG_SIZE_RESP, 0, response_payload)
                     self.client_socket.sendall(response)
 
+                #If not require data, and i want to do something....
+
             except Exception as e:
                 print(f"Error: {e}")
                 break
 
-        if self.client_socket: self.client_socket.close()
+        #if self.client_socket: self.client_socket.close()
+
 
 
     # --- Main Execution ---
