@@ -21,7 +21,6 @@ class ClientWindowEngine:
         self.segmentator = segmentator
         self.windowbase = 0
         self.segmentsize = 2
-        self.acked = []
         self.recv_buffer = ""
 
         # State for visualization
@@ -123,6 +122,10 @@ class ClientWindowEngine:
     def set_segmentsize(self, val):
         self.segmentsize = val
 
+    def send_fin(self):
+        data = Protocol.make_packet(Protocol.MSG_FIN, self.next_seq, "")
+        self.send_packet(data)
+
     def get_next_packet(self):
         if "\n" in self.recv_buffer:
             packet_str, self.recv_buffer = self.recv_buffer.split("\n", 1)
@@ -136,6 +139,8 @@ class ClientWindowEngine:
                 self.recv_buffer += data.decode("utf-8")
         except socket.timeout:
             raise
+    def close(self):
+        self.Clientobject.close()
 
     def run(self):
         max_retries = 3
@@ -147,7 +152,6 @@ class ClientWindowEngine:
 
         # fill the window until the file is sent
         while not self.segmentator.isfinished() or self.windowbase < self.next_seq:
-
             # SENDING LOOP
             while self.segmentator.get_seq_number() < self.windowbase + self.window_size:
                 # Check bounds or stop if source finished
@@ -183,6 +187,12 @@ class ClientWindowEngine:
 
                             # This moves the window and triggers the Green Animation
                             self.move_window(seq_num)
+
+                            # Check if it was the last ack
+                            if self.segmentator.isfinished():
+                                self.send_fin()
+                                print("The message has been sent.")
+
 
             except socket.timeout:
                 retry_count += 1

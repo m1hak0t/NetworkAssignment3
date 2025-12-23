@@ -48,10 +48,16 @@ class ServerWindowEngine():
                     raw_data = self.get_next_packet()
                     # unpack the data
                     msg_type, seq_num, payload = Protocol.get_packet_from_str(raw_data)
+                    # Check if the server has ended the connection
+                    if msg_type == Protocol.MSG_FIN :
+                        print("The following string recieved from the client: " + self.result.decode("utf-8"))
+                        break
                     # Check if sequence is valid
                     if msg_type == Protocol.MSG_DATA and seq_num == self.expected_seq:
                         #if yes - > increace expeted by 1 and send ack
                         self.expected_seq += 1
+                        #Add the payload to the result
+                        self.result += payload.encode("utf-8")
                         # Send an ack with the expected seq number
                         self.send_ack(self.expected_seq, self.get_random_size())
                     #if no - > leave expected as is

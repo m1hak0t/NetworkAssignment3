@@ -48,10 +48,7 @@ class DataSegmentator:
         return self.segment_counter
 
     def isfinished(self):
-        if self.current_end >= len(self.encoded_data):
-            return True
-        else:
-            return False
+        return self.current_start >= len(self.encoded_data)
 
 
 if __name__ == "__main__":

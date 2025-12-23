@@ -7,6 +7,7 @@ class Protocol:
     MSG_DATA = "DATA"
     MSG_REQ_SIZE = "REQ_SIZE" #for client
     MSG_SIZE_RESP = "SIZE_RES" #for server
+    MSG_FIN = "FIN"
 
 
     #separation between the datas - we can change just this obj instand the code
