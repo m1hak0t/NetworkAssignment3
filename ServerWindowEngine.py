@@ -1,9 +1,11 @@
+import random
 from socket import socket
+
+from Protocol import Protocol
 
 
 class ServerWindowEngine():
-    def __init__(self, server_socket : socket.socket, filepath : str):
-            self.server_socket = server_socket
+    def __init__(self, server_socket, filepath : str):
             self.filepath = filepath
             self.server_socket = server_socket
             self.recv_buffer = ""
@@ -11,6 +13,7 @@ class ServerWindowEngine():
             self.current_seq = 0
             self.result = b""
             self.lostnfound = []
+            self.seq_num = 0
 
 
     def receive_and_buffer(self):
@@ -18,7 +21,7 @@ class ServerWindowEngine():
             data = self.server_socket.recv(1024)
             if data:
                 self.recv_buffer += data.decode("utf-8")
-        except socket.timeout:
+        except TimeoutError:
             raise
 
     def get_next_packet(self):
@@ -27,11 +30,32 @@ class ServerWindowEngine():
             return packet_str
         return None
 
-    def send_packet(self, payload):
-        pass
+    def send_ack(self, seq_num ,dynamic_size):
+        packet = Protocol.make_packet(Protocol.MSG_ACK, seq_num, str(dynamic_size) )
+        self.server_socket.sendall(packet)
+
+    def get_random_size(self):
+         return random.randint(0,6)
 
     def run(self):
-        pass
-        #while
-        #Check if there is a package to recieve
-        #If the package sequence number >= 1
+
+        while True:
+            try :
+            #Check if there is a package to recieve
+                self.receive_and_buffer()
+                #If there is a package
+                while self.recv_buffer:
+                    raw_data = self.get_next_packet()
+                    # unpack the data
+                    msg_type, seq_num, payload = Protocol.get_packet_from_str(raw_data)
+                    # Check if sequence is valid
+                    if msg_type == Protocol.MSG_DATA and seq_num == self.expected_seq:
+                        #if yes - > increace expeted by 1 and send ack
+                        self.expected_seq += 1
+                        # Send an ack with the expected seq number
+                        self.send_ack(self.expected_seq, self.get_random_size())
+                    #if no - > leave expected as is
+            except BaseException as e:
+                print(e)
+
+

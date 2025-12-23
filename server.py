@@ -2,6 +2,8 @@ import socket
 
 from Protocol import Protocol
 from ConfigLoader import ConfigLoader
+from ServerWindowEngine import ServerWindowEngine
+
 
 class ReliableServer:
 
@@ -14,6 +16,7 @@ class ReliableServer:
         self.client_addr = None
 
         # Reading from file
+        self.config_file_path = config_file_path
         self.full_config = ConfigLoader.load_config(config_file_path)
         self.maximum_msg_size = self.full_config["maximum_msg_size"]
         self.dynamic_message_size = self.full_config["dynamic message size"]
@@ -90,11 +93,8 @@ class ReliableServer:
             return False
     #Get req of "max_size" - return resp by the file
     def handle_client_requests(self):
-        while True:
             try:
                 data = self.client_socket.recv(1024)
-                if not data:
-                    break
 
                 msg_type, seq_num, payload = Protocol.get_packet(data)
                 if msg_type == Protocol.MSG_REQ_SIZE:
@@ -113,11 +113,11 @@ class ReliableServer:
                     response = Protocol.make_packet(Protocol.MSG_SIZE_RESP, 0, response_payload)
                     self.client_socket.sendall(response)
 
-                #If not require data, and i want to do something....
+                window = ServerWindowEngine(self.client_socket,self.config_file_path)
+                window.run()
 
             except Exception as e:
                 print(f"Error: {e}")
-                break
 
         #if self.client_socket: self.client_socket.close()
 
