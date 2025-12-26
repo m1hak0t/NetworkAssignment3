@@ -1,10 +1,8 @@
 import socket
-
 from ClientWindowEngine import ClientWindowEngine
 from DataSegmentator import DataSegmentator
 from Protocol import Protocol
 from ConfigLoader import ConfigLoader
-import os
 
 
 
@@ -80,14 +78,15 @@ class ReliableClient:
 
             # Chack and update (dynamic/num)
             if msg_type == Protocol.MSG_SIZE_RESP:
+
+                if payload.isdigit() :
+                    self.maximum_msg_size = int(payload)
+
                 if payload == "dynamic message size = true":
                     self.dynamic_message_size = True
-                else:
-                    #Not dynamic - put the number (from file) in "max_size"
-                    self.maximum_msg_size = int(payload)
                     print(f"[Client] Max size set to: {self.maximum_msg_size}")
-                return True
-            return False
+
+            self.dynamic_message_size =  False
 
         except Exception as e:
             print(f"Error during size negotiation: {e}")
@@ -111,7 +110,7 @@ class ReliableClient:
                 print("Ready to send")
         #The sliding window functionality
         segmentator_client = DataSegmentator(self.file_path)
-        window = ClientWindowEngine(client.client_socket, segmentator_client, self.file_path)
+        window = ClientWindowEngine(client.client_socket, segmentator_client, self.file_path, self.dynamic_message_size)
         window.run()
 
 

@@ -10,7 +10,7 @@ from Protocol import Protocol
 
 
 class ClientWindowEngine:
-    def __init__(self, Clientobject: socket.socket, segmentator: DataSegmentator, filename: str):
+    def __init__(self, Clientobject: socket.socket, segmentator: DataSegmentator, filename: str, dynamic : bool):
         self.config = ConfigLoader.load_config(filename)
         self.Clientobject = Clientobject
         self.message = self.config["message"]
@@ -22,6 +22,7 @@ class ClientWindowEngine:
         self.windowbase = 0
         self.segmentsize = 2
         self.recv_buffer = ""
+        self.isdynamic = dynamic
 
         # State for visualization
         self.next_seq = 0
@@ -182,7 +183,8 @@ class ClientWindowEngine:
 
                     if msg_type == Protocol.MSG_ACK:
                         if seq_num >= self.windowbase:
-                            if payload and payload.isdigit():
+                            if payload and payload.isdigit() & self.isdynamic:
+                                ##Here is the probelm with the flag
                                 self.set_segmentsize(int(payload))
 
                             # This moves the window and triggers the Green Animation

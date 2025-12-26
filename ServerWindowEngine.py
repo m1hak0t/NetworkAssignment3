@@ -60,7 +60,7 @@ class ServerWindowEngine():
                         self.result += payload.encode("utf-8")
                         # Send an ack with the expected seq number
                         self.send_ack(self.expected_seq, self.get_random_size())
-                    #if no - > leave expected as is
+
             except BaseException as e:
                 print(e)
 
