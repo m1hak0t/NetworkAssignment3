@@ -4,11 +4,10 @@ from ConfigLoader import ConfigLoader
 
 
 class DataSegmentator:
-    def __init__(self, filename):
-        config = ConfigLoader.load_config(filename)
-        self.message = config["message"]
-        self.maximum_msg_size = config["maximum_msg_size"]
-        self.timeout = config["timeout"]
+    def __init__(self, filename, config : ConfigLoader):
+        self.config = config
+        self.message = self.config["message"]
+        self.timeout = self.config["timeout"]
         self.encoded_data = self.message.encode("utf-8")
         print(self.encoded_data.hex())
         self.current_start = 0

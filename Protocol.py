@@ -23,7 +23,7 @@ class Protocol:
     @staticmethod
     def get_packet_from_str(packet_str):
         # Парсим строку, убирая лишние пробелы/символы конца строки
-        parts = packet_str.strip().split(Protocol.DELIMITER, 2)
+        parts = packet_str.rstrip('\n').split(Protocol.DELIMITER, 2)
         return parts[0], int(parts[1]), parts[2]
 
     #Get parts and return a message - according to the protocol

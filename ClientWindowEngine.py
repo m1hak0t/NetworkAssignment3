@@ -10,8 +10,8 @@ from Protocol import Protocol
 
 
 class ClientWindowEngine:
-    def __init__(self, Clientobject: socket.socket, segmentator: DataSegmentator, filename: str, dynamic : bool):
-        self.config = ConfigLoader.load_config(filename)
+    def __init__(self, Clientobject: socket.socket, segmentator: DataSegmentator, filename: str, dynamic : bool, config : ConfigLoader):
+        self.config = config
         self.Clientobject = Clientobject
         self.message = self.config["message"]
         self.window_size = self.config["window_size"]

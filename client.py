@@ -14,7 +14,7 @@ class ReliableClient:
         self.server_port = server_port
         self.client_socket = None
 
-        self.config = ConfigLoader.load_config(config_file)
+        self.config = ConfigLoader.load_config(config_file, False)
         self.file_path = "client_config.txt"
         self.mesage = self.config["message"]
         self.window_size = self.config["window_size"]
@@ -109,8 +109,8 @@ class ReliableClient:
             if client.get_max_message_size():
                 print("Ready to send")
         #The sliding window functionality
-        segmentator_client = DataSegmentator(self.file_path)
-        window = ClientWindowEngine(client.client_socket, segmentator_client, self.file_path, self.dynamic_message_size)
+        segmentator_client = DataSegmentator(self.file_path, self.config)
+        window = ClientWindowEngine(client.client_socket, segmentator_client, self.file_path, self.dynamic_message_size,self.config)
         window.run()
 
 
