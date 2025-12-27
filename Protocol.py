@@ -15,14 +15,14 @@ class Protocol:
 
     @staticmethod
     def make_packet(msg_type, seq_num=0, payload=""):
-        # Добавляем \n как разделитель пакетов
+        # Add \n to a packet divider
         msg = f"{msg_type}{Protocol.DELIMITER}{seq_num}{Protocol.DELIMITER}{payload}\n"
         return msg.encode("utf-8")
 
 
     @staticmethod
     def get_packet_from_str(packet_str):
-        # Парсим строку, убирая лишние пробелы/символы конца строки
+        # Parsing string, deleting \n
         parts = packet_str.rstrip('\n').split(Protocol.DELIMITER, 2)
         return parts[0], int(parts[1]), parts[2]
 

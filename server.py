@@ -103,6 +103,13 @@ class ReliableServer:
 
             return False
 
+    def close(self):
+        print("Closing the server")
+        try :
+            self.client_socket.close()
+        except Exception as e:
+            pass
+
     # Get req of "max_size" - return resp by the file
     def handle_client_requests(self):
         try:

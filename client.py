@@ -102,8 +102,7 @@ class ReliableClient:
 
     def run(self):
         #Handshake
-        self.connect()
-        if client.connect():
+        if self.connect():
             print("Ready to send file...")
             # 2. The "max_size" request
             if client.get_max_message_size():

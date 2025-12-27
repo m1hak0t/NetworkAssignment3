@@ -1,4 +1,4 @@
-message: Shira is the queen of complaints
+message: Very long and annoying unsendable message one more time and one more time and one more time
 maximum_msg_size: 999
 window_size: 10
 timeout: 5
