@@ -98,11 +98,13 @@ class ServerWindowEngine():
                             self.result += payload.encode("utf-8")
                             self.expected_seq += 1
                             self.process_buffered_packets()
-                            self.send_ack(self.expected_seq, self.get_random_size())
+                            # Send ACK for the last successfully received in-order packet
+                            self.send_ack(self.expected_seq - 1, self.get_random_size())
                             print(f"Sending the ACK with sequence number : {self.expected_seq}")
                         if seq_num > self.expected_seq:
                             self.packet_buffer[seq_num] = payload
-                            self.send_ack(self.expected_seq, self.get_random_size())
+                            # Send cumulative ACK for last in-order packet received
+                            self.send_ack(self.expected_seq - 1, self.get_random_size())
 
             except Exception as e:
                 print(f"Engine Error: {e}")

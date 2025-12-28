@@ -10,7 +10,7 @@ from Protocol import Protocol
 
 
 class ClientWindowEngine:
-    def __init__(self, Clientobject: socket.socket, segmentator: DataSegmentator, filename: str, dynamic : bool, config : ConfigLoader):
+    def __init__(self, Clientobject: socket.socket, segmentator: DataSegmentator, filename: str, dynamic : bool, config : ConfigLoader, maximum_msg_size : int):
         self.config = config
         self.Clientobject = Clientobject
         self.message = self.config["message"]
@@ -20,15 +20,21 @@ class ClientWindowEngine:
         # Assuming segmentator is a class passed in
         self.segmentator = segmentator
         self.windowbase = 0
-        self.segmentsize = 2
+
         self.recv_buffer = ""
         self.isdynamic = dynamic
         print(f"Client windows engine is set to dynamic mode : {self.isdynamic}")
+
+
+        self.segmentsize = maximum_msg_size # Start with minimum size, will be updated by server
+
 
         # State for visualization
         self.next_seq = 0
 
         Clientobject.settimeout(self.wait_timeout)
+
+        self.sent_packets = {}  # {seq_num: payload}
 
     # --- VISUALIZATION ENGINE ---
 
@@ -111,15 +117,14 @@ class ClientWindowEngine:
     def send_unacked(self, sequence_number):
         self.render_window(f"\033[91mTIMEOUT! Retransmitting {self.windowbase} to {sequence_number}\033[0m")
         for i in range(self.windowbase, sequence_number + 1):
-            # Note: You need a way to get specific packets again if relying on a generator.
-            # Assuming segmentator.get(i) can retrieve past data
-            payload = self.segmentator.get(i)
-            # Check if payload exists to avoid errors
-            if payload:
-                payload_decoded = payload.decode("utf-8") if isinstance(payload, bytes) else str(payload)
+            # Use stored packets instead of segmentator.get()
+            if i in self.sent_packets:
+                payload_decoded = self.sent_packets[i]
                 package = Protocol.make_packet(Protocol.MSG_DATA, i, payload_decoded)
                 self.send_packet(package)
-                time.sleep(0.1)  # slight visual delay for retransmits
+                time.sleep(0.1)
+            else:
+                print(f"Warning: Packet {i} not found in sent_packets")
 
     def set_segmentsize(self, val):
         self.segmentsize = val
@@ -164,10 +169,14 @@ class ClientWindowEngine:
                 payload = self.segmentator.next(self.segmentsize)
                 print(f"The next segment will be with {self.segmentsize} bytes")
                 if payload:
-                    packet = Protocol.make_packet(Protocol.MSG_DATA, self.next_seq, payload.decode("utf-8"))
+                    payload_decoded = payload.decode("utf-8")
+                    packet = Protocol.make_packet(Protocol.MSG_DATA, self.next_seq, payload_decoded)
                     self.send_packet(packet)
+
+                    # Store for potential retransmission
+                    self.sent_packets[self.next_seq] = payload_decoded
+
                     print(f"Package with the size: {self.segmentsize} sent")
-                    # VISUALIZATION UPDATE
                     current_seq = self.next_seq
                     self.next_seq += 1
                     self.render_window(f"Sent packet {current_seq}")
@@ -187,25 +196,19 @@ class ClientWindowEngine:
                     print(f"SEQ NUM : {seq_num}")
                     print(f"PAYLOAD : {payload}")
 
-
                     if msg_type == Protocol.MSG_ACK:
                         print(f"ACK RECEIVED {seq_num}")
-                        print(payload.isdigit())
-                        print(self.isdynamic)
-                        if seq_num >= self.windowbase:
+                        if seq_num == self.windowbase:
                             if payload and payload.isdigit() and self.isdynamic:
-                                ##Here is the probelm with the flag
                                 self.set_segmentsize(int(payload))
-                                print(f"Current segmentsize : {self.segmentsize}")
 
-                            # This moves the window and triggers the Green Animation
                             self.move_window(seq_num)
 
-                            # Check if it was the last ack
-                            if self.segmentator.isfinished():
+                            # Check if ALL data has been ACKed (not just finished reading)
+                            if self.segmentator.isfinished() and self.windowbase >= self.next_seq:
                                 self.send_fin()
                                 print("The message has been sent.")
-
+                                return  # Exit the run loop
 
             except socket.timeout:
                 retry_count += 1

@@ -136,6 +136,7 @@ class ReliableServer:
 
             window = ServerWindowEngine(self.client_socket, self.config_file_path,
                                         self.sabotage_mode, self.sabotage_probability, self.drop_point)
+
             window.run()
             window.update(-1,False)
 

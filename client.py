@@ -115,12 +115,22 @@ class ReliableClient:
                 print("Ready to send")
         #The sliding window functionality
         segmentator_client = DataSegmentator(self.file_path, self.config)
-        window = ClientWindowEngine(self.client_socket, segmentator_client, self.file_path, self.dynamic_message_size,self.config)
+        window = ClientWindowEngine(self.client_socket, segmentator_client, self.file_path, self.dynamic_message_size,self.config, self.maximum_msg_size)
         window.run()
+        answer = input("Press Enter to continue... y/n")
+        if answer.lower() == "y":
+            self.config = ConfigLoader.load_config(self.file_path, False)
+            self.run()
+        else:
+            self.close()
+
+
 
 
 # --- Main Execution ---
 if __name__ == "__main__":
     # Creat "client"
     client = ReliableClient('127.0.0.1', 12345, "client_config.txt")
+
     client.run()
+
