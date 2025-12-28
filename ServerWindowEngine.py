@@ -25,8 +25,9 @@ class ServerWindowEngine():
         #When to start dropping packages
         self.drop = drop
 
-    def set_drop(self, integer):
-        self.drop = integer
+    def update(self, drop , sabotage):
+        self.drop = drop
+        self.sabotage_mode = sabotage
 
     def receive_and_buffer(self):
         try:
@@ -57,7 +58,7 @@ class ServerWindowEngine():
         self.server_socket.sendall(packet)
 
     def get_random_size(self):
-        return random.randint(0, 6)
+        return random.randint(1, 6)
 
     def process_buffered_packets(self):
         """Process any consecutively buffered packets starting from expected_seq"""

@@ -13,24 +13,29 @@ class ConfigLoader:
             if ifserver:
                 print("Detected caller: SERVER")
                 # Logic for server
-                return {
+                config =  {
                     "maximum_msg_size": int(input("Enter maximum message size (bytes): ")),  # [cite: 70]
                     "timeout": int(input("Enter timeout (seconds): ")),  # [cite: 71]
-                    "dynamic message size": input("Dynamic message size? (True/False): ").lower(), # [cite: 71]
-                    "sabotage_mode": input("Do you want to sabotage packages? (True/False): ").lower(),
+                    "dynamic message size": input("Dynamic message size? (True/False): ").lower() == "true", # [cite: 71]
+                    "sabotage_mode": input("Do you want to sabotage packages? (True/False): ").lower() == "true",
                     "sabotage_probability": input("Enter the probability of sabotage packages? (0.0-1.0): ")
                 }
+                print(config)
+                return config
+
 
             if ifserver == False:
 
                 print("Detected caller: CLIENT")
                 # Logic for client
-                return {
+                config = {
                     "message": input("Enter the desired message: "),  # [cite: 69]
                     "window_size": int(input("Enter window size (integer): ")),  # [cite: 71]
                     "timeout": int(input("Enter timeout (seconds): ")),  # [cite: 71]
 
                 }
+                return config
+
 
         except Exception as e:
             print("Something is incorrect, contact Shira and Michael for support, but for now just try one more time")
@@ -94,20 +99,22 @@ class ConfigLoader:
                         if key == "message":
                             config["message"] = str(value)
 
-                        elif key == "maximum_msg_size":
+                        if key == "maximum_msg_size":
                             config["maximum_msg_size"] = int(value)
 
-                        elif key == "window_size":
+                        if key == "window_size":
                             config["window_size"] = int(value)
 
-                        elif key == "timeout":
+                        if key == "timeout":
                             config["timeout"] = int(value)
 
-                        elif key == "dynamic message size":
+                        if key == "dynamic message size":
                             config["dynamic message size"] = (value.lower() == "true") # just "bool" will pass everything
-                        elif key == "sabotage_mode":
+                        if key == "sabotage_mode":
                             config["sabotage_mode"] = True if value.lower() == "true" else False
-                        elif key == "sabotage_probability":
+                            bool = config["sabotage_mode"]
+                            print(f"Sabotage mode set to :  {bool}")
+                        if key == "sabotage_probability":
                             config["sabotage_probability"] = value
 
                 print(f"Config loaded from {file_path}")

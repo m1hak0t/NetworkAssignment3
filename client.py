@@ -21,7 +21,7 @@ class ReliableClient:
         self.timeout = self.config["timeout"]
 
         # for now - until the answer from server
-        self.maximum_msg_size = None
+        self.maximum_msg_size = 5
         self.dynamic_message_size = None
 
     def connect(self):
@@ -78,15 +78,21 @@ class ReliableClient:
 
             # Chack and update (dynamic/num)
             if msg_type == Protocol.MSG_SIZE_RESP:
+                print(f"Received message size response : {payload}")
+                #!!!!!!!!!!!!!!
 
                 if payload.isdigit() :
                     self.maximum_msg_size = int(payload)
+                    return True
 
-                if payload == "dynamic message size = true":
+                if "dynamic" in payload:
                     self.dynamic_message_size = True
+                    print("The message size is set to  dynamic")
                     print(f"[Client] Max size set to: {self.maximum_msg_size}")
-
-            self.dynamic_message_size =  False
+                    return True
+                else :
+                    self.dynamic_message_size = False
+                    return False
 
         except Exception as e:
             print(f"Error during size negotiation: {e}")
@@ -105,11 +111,11 @@ class ReliableClient:
         if self.connect():
             print("Ready to send file...")
             # 2. The "max_size" request
-            if client.get_max_message_size():
+            if self.get_max_message_size():
                 print("Ready to send")
         #The sliding window functionality
         segmentator_client = DataSegmentator(self.file_path, self.config)
-        window = ClientWindowEngine(client.client_socket, segmentator_client, self.file_path, self.dynamic_message_size,self.config)
+        window = ClientWindowEngine(self.client_socket, segmentator_client, self.file_path, self.dynamic_message_size,self.config)
         window.run()
 
 

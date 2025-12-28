@@ -23,6 +23,7 @@ class ClientWindowEngine:
         self.segmentsize = 2
         self.recv_buffer = ""
         self.isdynamic = dynamic
+        print(f"Client windows engine is set to dynamic mode : {self.isdynamic}")
 
         # State for visualization
         self.next_seq = 0
@@ -43,8 +44,8 @@ class ClientWindowEngine:
         """
         Clears console and draws the current state of the sliding window.
         """
-        # 1. Clear Screen (Cross-platform)
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # # 1. Clear Screen (Cross-platform)
+        # os.system('cls' if os.name == 'nt' else 'clear')
 
         print(f"=== LIVE SLIDING WINDOW VISUALIZATION ===")
         print(f"Window Base: {self.windowbase:<5} | Next Seq: {self.next_seq:<5} | Window Size: {self.window_size}")
@@ -122,6 +123,7 @@ class ClientWindowEngine:
 
     def set_segmentsize(self, val):
         self.segmentsize = val
+        print(f"The segmentsize is {self.segmentsize}")
 
     def send_fin(self):
         data = Protocol.make_packet(Protocol.MSG_FIN, self.next_seq, "")
@@ -149,7 +151,7 @@ class ClientWindowEngine:
         self.next_seq = 0
 
         # Initial Render
-        self.render_window("Starting Transmission...")
+        #self.render_window("Starting Transmission...")
 
         # fill the window until the file is sent
         while not self.segmentator.isfinished() or self.windowbase < self.next_seq:
@@ -160,10 +162,11 @@ class ClientWindowEngine:
                     break
 
                 payload = self.segmentator.next(self.segmentsize)
+                print(f"The next segment will be with {self.segmentsize} bytes")
                 if payload:
                     packet = Protocol.make_packet(Protocol.MSG_DATA, self.next_seq, payload.decode("utf-8"))
                     self.send_packet(packet)
-
+                    print(f"Package with the size: {self.segmentsize} sent")
                     # VISUALIZATION UPDATE
                     current_seq = self.next_seq
                     self.next_seq += 1
@@ -180,12 +183,20 @@ class ClientWindowEngine:
                         break
 
                     msg_type, seq_num, payload = Protocol.get_packet_from_str(packet_str)
+                    print(f"MSG TYPE : {msg_type}")
+                    print(f"SEQ NUM : {seq_num}")
+                    print(f"PAYLOAD : {payload}")
+
 
                     if msg_type == Protocol.MSG_ACK:
+                        print(f"ACK RECEIVED {seq_num}")
+                        print(payload.isdigit())
+                        print(self.isdynamic)
                         if seq_num >= self.windowbase:
-                            if payload and payload.isdigit() & self.isdynamic:
+                            if payload and payload.isdigit() and self.isdynamic:
                                 ##Here is the probelm with the flag
                                 self.set_segmentsize(int(payload))
+                                print(f"Current segmentsize : {self.segmentsize}")
 
                             # This moves the window and triggers the Green Animation
                             self.move_window(seq_num)

@@ -1,4 +1,7 @@
-message: Very long and annoying unsendable message one more time and one more time and one more time
-maximum_msg_size: 999
-window_size: 10
+message: first msg - assignment 3 not so easy...
+maximum_msg_size: 50
+window_size: 2
 timeout: 5
+
+
+

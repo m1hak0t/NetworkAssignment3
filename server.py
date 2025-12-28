@@ -21,6 +21,7 @@ class ReliableServer:
         self.maximum_msg_size = self.full_config["maximum_msg_size"]
         self.dynamic_message_size = self.full_config["dynamic message size"]
         self.sabotage_mode = self.full_config["sabotage_mode"]
+        print(self.sabotage_mode)
         self.sabotage_probability = self.full_config["sabotage_probability"]
         self.drop_point = 10
 
@@ -36,6 +37,7 @@ class ReliableServer:
         print(f"Server listening on port {self.port}...")
 
         if self.sabotage_mode:
+
             print(f"[SABOTAGE MODE ENABLED] ACK drop probability: {self.sabotage_probability}")
             answer = input("Do you want to drop all the packages after the 10's package or drop them randomly? 1/2?")
             if answer == "1" :
@@ -135,7 +137,7 @@ class ReliableServer:
             window = ServerWindowEngine(self.client_socket, self.config_file_path,
                                         self.sabotage_mode, self.sabotage_probability, self.drop_point)
             window.run()
-            window.set_drop(-1)
+            window.update(-1,False)
 
         except Exception as e:
             print(f"Error: {e}")
