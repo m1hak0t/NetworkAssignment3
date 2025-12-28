@@ -135,6 +135,7 @@ class ReliableServer:
             window = ServerWindowEngine(self.client_socket, self.config_file_path,
                                         self.sabotage_mode, self.sabotage_probability, self.drop_point)
             window.run()
+            window.set_drop(-1)
 
         except Exception as e:
             print(f"Error: {e}")

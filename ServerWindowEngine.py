@@ -25,6 +25,9 @@ class ServerWindowEngine():
         #When to start dropping packages
         self.drop = drop
 
+    def set_drop(self, integer):
+        self.drop = integer
+
     def receive_and_buffer(self):
         try:
             data = self.server_socket.recv(1024)
