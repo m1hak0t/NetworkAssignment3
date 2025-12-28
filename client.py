@@ -118,7 +118,7 @@ class ReliableClient:
         window = ClientWindowEngine(self.client_socket, segmentator_client, self.file_path, self.dynamic_message_size,self.config, self.maximum_msg_size)
         window.run()
         answer = input("Press Enter to continue... y/n")
-        if answer.lower() == "y":
+        if "y" in answer.lower():
             self.config = ConfigLoader.load_config(self.file_path, False)
             self.run()
         else:

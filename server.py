@@ -21,6 +21,7 @@ class ReliableServer:
         self.maximum_msg_size = self.full_config["maximum_msg_size"]
         self.dynamic_message_size = self.full_config["dynamic message size"]
         self.sabotage_mode = self.full_config["sabotage_mode"]
+        self.timeout =self.full_config["timeout"]
         print(self.sabotage_mode)
         self.sabotage_probability = self.full_config["sabotage_probability"]
         self.drop_point = 10
@@ -135,7 +136,7 @@ class ReliableServer:
                 self.client_socket.sendall(response)
 
             window = ServerWindowEngine(self.client_socket, self.config_file_path,
-                                        self.sabotage_mode, self.sabotage_probability, self.drop_point)
+                                        self.sabotage_mode, self.sabotage_probability, self.drop_point,self.timeout )
 
             window.run()
             window.update(-1,False)

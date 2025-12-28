@@ -1,11 +1,11 @@
 import random
-from socket import socket
+import socket
 
 from Protocol import Protocol
 
 
 class ServerWindowEngine():
-    def __init__(self, server_socket, filepath: str, sabotage_mode=False, sabotage_probability=0.3, drop = -1):
+    def __init__(self, server_socket, filepath: str, sabotage_mode=False, sabotage_probability=0.3, drop = -1, timeout  = 1):
         self.filepath = filepath
         self.server_socket = server_socket
         self.recv_buffer = ""
@@ -24,6 +24,8 @@ class ServerWindowEngine():
 
         #When to start dropping packages
         self.drop = drop
+        # new -timer
+        self.server_socket.settimeout(1)  # 10 שניות timeout
 
     def update(self, drop , sabotage):
         self.drop = drop
@@ -34,6 +36,9 @@ class ServerWindowEngine():
             data = self.server_socket.recv(1024)
             if data:
                 self.recv_buffer += data.decode("utf-8")
+            else:
+                # אם recv מחזיר ריק - החיבור נסגר
+                raise ConnectionError("Client closed connection")
         except TimeoutError:
             raise
 
@@ -72,9 +77,14 @@ class ServerWindowEngine():
 
     def run(self):
 
+        # new - timer
+        consecutive_timeout = 0
+        max_timeouts = 3
+
         while True:
             try:
                 self.receive_and_buffer()
+                consecutive_timeouts = 0
 
                 #Keep pulling packets only as long as they are complete (\n found)
                 while True:
@@ -105,6 +115,15 @@ class ServerWindowEngine():
                             self.packet_buffer[seq_num] = payload
                             # Send cumulative ACK for last in-order packet received
                             self.send_ack(self.expected_seq - 1, self.get_random_size())
+
+            except socket.timeout:
+                consecutive_timeouts += 1
+                print(f"[Server] Timeout {consecutive_timeouts}/{max_timeouts}")
+
+                if consecutive_timeouts >= max_timeouts:
+                    print("[Server] Max timeouts reached. Closing connection.")
+                    print("The following string received from the client: " + self.result.decode("utf-8"))
+                    return
 
             except Exception as e:
                 print(f"Engine Error: {e}")

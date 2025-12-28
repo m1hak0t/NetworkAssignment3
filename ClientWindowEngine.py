@@ -156,7 +156,7 @@ class ClientWindowEngine:
         self.next_seq = 0
 
         # Initial Render
-        #self.render_window("Starting Transmission...")
+        self.render_window("Starting Transmission...")
 
         # fill the window until the file is sent
         while not self.segmentator.isfinished() or self.windowbase < self.next_seq:
